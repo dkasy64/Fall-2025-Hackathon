@@ -193,7 +193,26 @@ public class GenerateTextFromTextInput {
 
                 // Show plan and confirm before applying
                 boolean hasActions = plan != null && plan.actions != null && !plan.actions.isEmpty();
+                boolean requiresConfirm = false;
                 if (hasActions) {
+                    // Determine if any action mutates state; 'respond' and 'ask_clarification' do not
+                    for (Action a : plan.actions) {
+                        if (a == null || a.type == null) continue;
+                        switch (a.type) {
+                            case "create_event":
+                            case "update_event":
+                            case "resize_event":
+                            case "delete_event":
+                            case "auto_space":
+                            case "bulk_update":
+                            case "rebalance_week":
+                                requiresConfirm = true;
+                                break;
+                            default:
+                                // non-mutating, no confirm required
+                        }
+                        if (requiresConfirm) break;
+                    }
                     System.out.println("Planned changes:");
                     int idx = 1;
                     for (Action a : plan.actions) {
@@ -243,10 +262,12 @@ public class GenerateTextFromTextInput {
                                 System.out.println(" " + (idx++) + ". (unsupported) type='" + a.type + "'");
                         }
                     }
-                    String confirm = promptFromStdin("Apply these changes? [y/N]: ");
-                    if (confirm == null || !(confirm.equalsIgnoreCase("y") || confirm.equalsIgnoreCase("yes"))) {
-                        System.out.println("Cancelled. No changes applied.\n");
-                        hasActions = false; // prevent applying
+                    if (requiresConfirm) {
+                        String confirm = promptFromStdin("Apply these changes? [y/N]: ");
+                        if (confirm == null || !(confirm.equalsIgnoreCase("y") || confirm.equalsIgnoreCase("yes"))) {
+                            System.out.println("Cancelled. No changes applied.\n");
+                            hasActions = false; // prevent applying
+                        }
                     }
                 }
 
