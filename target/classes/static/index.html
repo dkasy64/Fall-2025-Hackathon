@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Calendar Summarizer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <h1>Calendar Summarizer</h1>
+      <p class="tagline">Upload an ICS file or type a prompt to generate a summary using the backend service.</p>
+    </header>
+
+    <section class="card">
+      <form id="generateForm" class="form" autocomplete="off">
+        <label class="field">
+          <span class="label">ICS file (optional)</span>
+          <input id="icsFile" name="icsFile" type="file" accept=".ics">
+        </label>
+
+        <label class="field">
+          <span class="label">Prompt (optional)</span>
+          <textarea id="prompt" name="prompt" rows="4" placeholder="Summarize my upcoming week... or leave blank to summarize the uploaded ICS file"></textarea>
+        </label>
+
+        <div class="actions">
+          <button id="submitBtn" type="submit" class="btn primary">Generate</button>
+          <button id="clearBtn" type="button" class="btn">Clear</button>
+        </div>
+      </form>
+
+      <div id="status" class="status" aria-live="polite"></div>
+
+      <div id="result" class="result" hidden>
+        <h2>Result</h2>
+        <pre id="resultText"></pre>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <small>Tip: If your Java app doesn't expose an HTTP endpoint yet, set up a small controller to accept multipart POSTs at the endpoint configured in the script below.</small>
+    </footer>
+  </main>
+
+  <script>
+    // Change this if your backend uses a different path
+    const ENDPOINT = '/generate'; // e.g. '/api/generate' or '/generate-text'
+
+    const form = document.getElementById('generateForm');
+    const icsFileEl = document.getElementById('icsFile');
+    const promptEl = document.getElementById('prompt');
+    const submitBtn = document.getElementById('submitBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const statusEl = document.getElementById('status');
+    const resultEl = document.getElementById('result');
+    const resultText = document.getElementById('resultText');
+
+    function setStatus(text, isError = false) {
+      statusEl.textContent = text;
+      statusEl.classList.toggle('error', isError);
+    }
+
+    clearBtn.addEventListener('click', () => {
+      promptEl.value = '';
+      icsFileEl.value = '';
+      resultEl.hidden = true;
+      resultText.textContent = '';
+      setStatus('Cleared.');
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      resultEl.hidden = true;
+      resultText.textContent = '';
+
+      const formData = new FormData();
+      const file = icsFileEl.files[0];
+      const prompt = promptEl.value.trim();
+
+      if (file) formData.append('icsFile', file);
+      if (prompt) formData.append('prompt', prompt);
+
+      // If neither provided, ask user
+      if (!file && !prompt) {
+        setStatus('Please provide an .ics file or a prompt.', true);
+        return;
+      }
+
+      submitBtn.disabled = true;
+      setStatus('Sending request...');
+
+      try {
+        const resp = await fetch(ENDPOINT, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!resp.ok) {
+          const text = await resp.text().catch(() => resp.statusText);
+          throw new Error(text || `Server returned ${resp.status}`);
+        }
+
+        // Prefer text response; fall back to JSON
+        let bodyText;
+        try {
+          bodyText = await resp.text();
+        } catch (err) {
+          const json = await resp.json();
+          bodyText = JSON.stringify(json, null, 2);
+        }
+
+        resultText.textContent = bodyText;
+        resultEl.hidden = false;
+        setStatus('Done.');
+      } catch (err) {
+        console.error(err);
+        setStatus('Request failed: ' + (err.message || err), true);
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
