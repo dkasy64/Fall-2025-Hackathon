@@ -90,9 +90,13 @@
         padding: 32px 28px 24px 28px;
         box-shadow: var(--shadow);
         border: 1px solid rgba(255, 255, 255, 0.05);
-        transition: box-shadow 0.2s;
+        transition: box-shadow 0.2s, border-color 0.2s;
         width: 100%;
         max-width: 100%;
+      }
+      .calendar-card:hover {
+        box-shadow: 0 16px 56px rgba(124, 92, 255, 0.13), var(--shadow);
+        border-color: #7c5cff33;
       }
       .calendar-title {
         text-align: left;
@@ -199,12 +203,44 @@
         justify-content: flex-start;
       }
       .ics-title {
-        font-size: 1.18rem;
+        font-size: 1.45rem;
         font-weight: 700;
         color: var(--accent);
-        margin-bottom: 18px;
+        margin-bottom: 8px;
         letter-spacing: 0.2px;
         text-align: left;
+      }
+      .summary-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .stat-item {
+        background: rgba(0, 0, 0, 0.22);
+        border-radius: 12px;
+        padding: 18px;
+        border: 1px solid #7c5cff22;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .stat-item:hover {
+        border-color: #7c5cff44;
+        box-shadow: 0 2px 12px #7c5cff11;
+      }
+      .stat-label {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+      .stat-value {
+        font-size: 2rem;
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
+      .stat-value.small {
+        font-size: 1.1rem;
+        font-weight: 600;
       }
       .ics-field {
         display: flex;
@@ -549,8 +585,7 @@
         <h1>Calendar Summarizer</h1>
         <div class="accent-bar"></div>
         <p class="tagline">
-          Upload an ICS file or type a prompt to generate a summary using the
-          backend service.
+          Upload an ICS file to generate a summary using the backend service.
         </p>
       </header>
 
@@ -570,30 +605,39 @@
         </div>
       </section>
 
-      <!-- ICS Uploader + Prompt (Second Row) -->
+      <!-- Calendar Summary + ICS Uploader (Second Row) -->
       <section class="second-row">
         <div class="ics-card">
-          <div class="ics-title">ICS File Uploader</div>
-          <div class="ics-field">
-            <label class="ics-label" for="icsFile">ICS file (optional)</label>
-            <input id="icsFile" name="icsFile" type="file" accept=".ics" />
+          <div class="ics-title">Calendar Summary</div>
+          <div class="summary-stats">
+            <div class="stat-item">
+              <div class="stat-label">Total Events</div>
+              <div class="stat-value" id="totalEvents">0</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Busy Hours</div>
+              <div class="stat-value" id="busyHours">0h</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Free Time</div>
+              <div class="stat-value" id="freeTime">8h</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Next Event</div>
+              <div class="stat-value small" id="nextEvent">None</div>
+            </div>
           </div>
         </div>
 
         <div class="card">
           <form id="generateForm" class="form" autocomplete="off">
-            <label class="field">
-              <span class="label">Prompt (optional)</span>
-              <textarea
-                id="prompt"
-                name="prompt"
-                rows="6"
-                placeholder="Summarize my upcoming week... or leave blank to summarize the uploaded ICS file"
-              ></textarea>
-            </label>
+            <div class="ics-field">
+              <label class="ics-label" for="icsFile">ICS file</label>
+              <input id="icsFile" name="icsFile" type="file" accept=".ics" />
+            </div>
             <div class="actions">
               <button id="submitBtn" type="submit" class="btn primary">
-                Generate
+                Generate Summary
               </button>
               <button id="clearBtn" type="button" class="btn">Clear</button>
             </div>
@@ -608,9 +652,8 @@
 
       <footer class="footer">
         <small
-          >Tip: If your Java app doesn't expose an HTTP endpoint yet, set up a
-          small controller to accept multipart POSTs at the endpoint configured
-          in the script below.</small
+          >Thank you for donating your information. We will use it
+          wisely.</small
         >
       </footer>
     </main>
@@ -648,7 +691,6 @@
       // Main form logic
       const form = document.getElementById("generateForm");
       const icsFileEl = document.getElementById("icsFile");
-      const promptEl = document.getElementById("prompt");
       const submitBtn = document.getElementById("submitBtn");
       const clearBtn = document.getElementById("clearBtn");
       const statusEl = document.getElementById("status");
@@ -661,7 +703,6 @@
       }
 
       clearBtn.addEventListener("click", () => {
-        promptEl.value = "";
         icsFileEl.value = "";
         resultEl.hidden = true;
         resultText.textContent = "";
@@ -675,15 +716,13 @@
 
         const formData = new FormData();
         const file = icsFileEl.files[0];
-        const prompt = promptEl.value.trim();
 
-        if (file) formData.append("icsFile", file);
-        if (prompt) formData.append("prompt", prompt);
-
-        if (!file && !prompt) {
-          setStatus("Please provide an .ics file or a prompt.", true);
+        if (!file) {
+          setStatus("Please provide an .ics file.", true);
           return;
         }
+
+        formData.append("icsFile", file);
 
         submitBtn.disabled = true;
         setStatus("Sending request...");
@@ -775,14 +814,14 @@
           if (resp.ok) {
             aiText = await resp.text();
           } else {
-            aiText = "AI is unavailable (mock response).";
+            aiText = "AI is unavailable.";
           }
           // Remove loading message
           chatMessages.lastChild.remove();
           addMessage(aiText, "ai");
         } catch (err) {
           chatMessages.lastChild.remove();
-          addMessage("AI is unavailable (mock response).", "ai");
+          addMessage("AI is unavailable.", "ai");
         }
       });
 
@@ -872,6 +911,37 @@
         calendarTable.innerHTML = html;
       }
 
+      // Calendar summary update function
+      function updateCalendarSummary() {
+        // This is a placeholder - in a real app, you'd calculate this from actual calendar data
+        // For now, we'll show sample data based on the selected date
+
+        if (selectedDay) {
+          // Simulate some events for the selected day
+          const totalEvents = Math.floor(Math.random() * 8) + 2;
+          const busyHours = Math.floor(Math.random() * 6) + 2;
+          const freeHours = 8 - busyHours;
+
+          document.getElementById("totalEvents").textContent = totalEvents;
+          document.getElementById("busyHours").textContent = `${busyHours}h`;
+          document.getElementById("freeTime").textContent = `${freeHours}h`;
+
+          // Generate a random next event time
+          const hours = Math.floor(Math.random() * 12) + 1;
+          const minutes = Math.random() < 0.5 ? "00" : "30";
+          const ampm = Math.random() < 0.5 ? "AM" : "PM";
+          document.getElementById(
+            "nextEvent"
+          ).textContent = `${hours}:${minutes} ${ampm}`;
+        } else {
+          // Show default values for current day
+          document.getElementById("totalEvents").textContent = "5";
+          document.getElementById("busyHours").textContent = "4h";
+          document.getElementById("freeTime").textContent = "4h";
+          document.getElementById("nextEvent").textContent = "2:00 PM";
+        }
+      }
+
       function updateSelectedDateDisplay() {
         if (selectedDay) {
           calendarSelectedDate.textContent = `Selected: ${selectedDay.toLocaleDateString(
@@ -881,6 +951,7 @@
         } else {
           calendarSelectedDate.textContent = "";
         }
+        updateCalendarSummary();
       }
 
       calendarTable.addEventListener("click", function (e) {
@@ -918,6 +989,7 @@
       // Initial render
       renderCalendar(currentMonth, currentYear);
       updateSelectedDateDisplay();
+      updateCalendarSummary();
     </script>
   </body>
 </html>
