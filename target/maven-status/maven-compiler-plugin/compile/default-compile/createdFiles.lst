@@ -1,1 +1,9 @@
-com\gemini\cli\GenerateTextFromTextInput.class
+com/gemini/cli/GenerateTextFromTextInput$ActionPlan.class
+com/gemini/backend/service/GeminiService.class
+com/gemini/cli/GenerateTextFromTextInput$Suggestion.class
+com/gemini/cli/GenerateTextFromTextInput$Action.class
+com/gemini/backend/controller/GeminController.class
+com/gemini/backend/GeminiBackendApplication.class
+com/gemini/cli/GenerateTextFromTextInput.class
+com/gemini/cli/GenerateTextFromTextInput$Move.class
+com/gemini/backend/service/CalendarTool.class

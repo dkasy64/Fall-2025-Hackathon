@@ -1,1 +1,5 @@
-C:\Users\jlafr\OneDrive\Documents\College\HackathonProject\AICalender\Fall-2025-Hackathon\src\main\java\com\gemini\cli\GenerateTextFromTextInput.java
+/home/thomas/Hackathon/Fall-2025-Hackathon/src/main/java/com/gemini/backend/GeminiBackendApplication.java
+/home/thomas/Hackathon/Fall-2025-Hackathon/src/main/java/com/gemini/backend/controller/GeminController.java
+/home/thomas/Hackathon/Fall-2025-Hackathon/src/main/java/com/gemini/backend/service/CalendarTool.java
+/home/thomas/Hackathon/Fall-2025-Hackathon/src/main/java/com/gemini/backend/service/GeminiService.java
+/home/thomas/Hackathon/Fall-2025-Hackathon/src/main/java/com/gemini/cli/GenerateTextFromTextInput.java
