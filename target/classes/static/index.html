@@ -347,10 +347,34 @@
         position: fixed;
         right: 32px;
         bottom: 32px;
-        width: 400px;
-        max-width: 98vw;
         z-index: 100;
         font-size: 1.08rem;
+      }
+      .chat-icon-btn {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), #5b9bff);
+        border: none;
+        color: #fff;
+        font-size: 2rem;
+        cursor: pointer;
+        box-shadow: 0 8px 32px #7c5cff55, 0 4px 16px #000a;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      .chat-icon-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 40px #7c5cff77, 0 6px 20px #000a;
+      }
+      .chat-icon-btn:active {
+        transform: scale(0.95);
+      }
+      .chat-icon-btn.hidden {
+        display: none;
       }
       .chatbox {
         background: linear-gradient(180deg, #181f2f 80%, #232a3d 100%);
@@ -358,20 +382,54 @@
         box-shadow: 0 12px 48px #000a, 0 2px 12px #7c5cff22;
         border: 1.5px solid #7c5cff22;
         padding: 24px 20px 16px 20px;
-        display: flex;
+        display: none;
         flex-direction: column;
         gap: 14px;
         min-height: 120px;
         max-height: 420px;
+        width: 400px;
+        max-width: 98vw;
         overflow-y: auto;
+      }
+      .chatbox.open {
+        display: flex;
+        animation: slideUp 0.3s ease-out;
+      }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .chatbox-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
       }
       .chatbox-title {
         font-size: 1.18rem;
         font-weight: 700;
         color: var(--accent);
-        margin-bottom: 4px;
         text-align: left;
         letter-spacing: 0.2px;
+      }
+      .chatbox-close {
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0;
+        transition: color 0.2s;
+        line-height: 1;
+      }
+      .chatbox-close:hover {
+        color: #fff;
       }
       .chat-messages {
         flex: 1;
@@ -559,8 +617,16 @@
 
     <!-- AI Chatbox -->
     <div class="chatbox-container">
+      <button class="chat-icon-btn" id="chatIconBtn" title="Open AI Chat">
+        💬
+      </button>
       <div class="chatbox" id="chatbox">
-        <div class="chatbox-title">AI Chat</div>
+        <div class="chatbox-header">
+          <div class="chatbox-title">AI Chat</div>
+          <button class="chatbox-close" id="chatboxClose" title="Close chat">
+            ✕
+          </button>
+        </div>
         <div class="chat-messages" id="chatMessages"></div>
         <form class="chatbox-form" id="chatboxForm" autocomplete="off">
           <input
@@ -653,9 +719,25 @@
       });
 
       // --- AI Chatbox logic ---
+      const chatIconBtn = document.getElementById("chatIconBtn");
+      const chatbox = document.getElementById("chatbox");
+      const chatboxClose = document.getElementById("chatboxClose");
       const chatMessages = document.getElementById("chatMessages");
       const chatboxForm = document.getElementById("chatboxForm");
       const chatboxInput = document.getElementById("chatboxInput");
+
+      // Open chat
+      chatIconBtn.addEventListener("click", () => {
+        chatbox.classList.add("open");
+        chatIconBtn.classList.add("hidden");
+        chatboxInput.focus();
+      });
+
+      // Close chat
+      chatboxClose.addEventListener("click", () => {
+        chatbox.classList.remove("open");
+        chatIconBtn.classList.remove("hidden");
+      });
 
       // Change this to your backend chat endpoint if available
       const CHAT_ENDPOINT = "/chat";
