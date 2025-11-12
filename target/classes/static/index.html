@@ -9,12 +9,12 @@
         --bg: #101624;
         --card: #181f2f;
         --muted: #a3adc2;
-        --accent: #7c5cff;
-        --accent-glow: 0 0 24px #7c5cff88;
+        --accent: #ff8a00; /* primary accent: orange */
+        --accent-glow: 0 0 24px #ff8a0088;
         --glass: rgba(255, 255, 255, 0.03);
         --radius: 18px;
         --shadow: 0 12px 48px rgba(20, 30, 60, 0.18),
-          0 2px 12px rgba(124, 92, 255, 0.1);
+          0 2px 12px rgba(255, 138, 0, 0.1);
       }
       * {
         box-sizing: border-box;
@@ -52,7 +52,7 @@
         text-shadow: var(--accent-glow), 0 4px 24px #232a3d;
         position: relative;
         z-index: 1;
-        background: linear-gradient(90deg, var(--accent), #5b9bff);
+  background: linear-gradient(90deg, var(--accent), #ffb74d);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -60,10 +60,10 @@
       .accent-bar {
         width: 120px;
         height: 8px;
-        background: linear-gradient(90deg, var(--accent), #5b9bff);
-        border-radius: 4px;
-        margin: 18px auto 0 auto;
-        box-shadow: 0 0 18px #7c5cff55;
+  background: linear-gradient(90deg, var(--accent), #ffb74d);
+  border-radius: 4px;
+  margin: 18px auto 0 auto;
+  box-shadow: 0 0 18px #ff8a0055;
       }
       .tagline {
         margin: 24px 0 0 0;
@@ -95,8 +95,8 @@
         max-width: 100%;
       }
       .calendar-card:hover {
-        box-shadow: 0 16px 56px rgba(124, 92, 255, 0.13), var(--shadow);
-        border-color: #7c5cff33;
+  box-shadow: 0 16px 56px rgba(255, 138, 0, 0.13), var(--shadow);
+  border-color: #ff8a0033;
       }
       .calendar-title {
         text-align: left;
@@ -166,6 +166,16 @@
       .calendar-table td:hover {
         background: #7c5cff33;
       }
+      .calendar-table td.has-events::after {
+        content: '';
+        display: block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #ffb74d;
+        margin: 6px auto 0 auto;
+        box-shadow: 0 0 6px #ffb74daa;
+      }
       .calendar-table td.inactive {
         color: #7c5cff55;
         cursor: default;
@@ -223,8 +233,8 @@
         transition: border-color 0.2s, box-shadow 0.2s;
       }
       .stat-item:hover {
-        border-color: #7c5cff44;
-        box-shadow: 0 2px 12px #7c5cff11;
+  border-color: #ff8a0044;
+  box-shadow: 0 2px 12px #ff8a0011;
       }
       .stat-label {
         font-size: 0.95rem;
@@ -257,7 +267,7 @@
         padding: 12px;
         background: var(--glass);
         border-radius: 10px;
-        border: 1.5px dashed #7c5cff33;
+  border: 1.5px dashed #ff8a0033;
         color: var(--muted);
         font-size: 1.08rem;
       }
@@ -277,8 +287,8 @@
       }
       .card:focus-within,
       .card:hover {
-        box-shadow: 0 16px 56px rgba(124, 92, 255, 0.13), var(--shadow);
-        border-color: #7c5cff33;
+  box-shadow: 0 16px 56px rgba(255, 138, 0, 0.13), var(--shadow);
+  border-color: #ff8a0033;
       }
       .form {
         display: flex;
@@ -302,7 +312,7 @@
         padding: 16px;
         border-radius: 10px;
         background: rgba(0, 0, 0, 0.22);
-        border: 1.5px solid #7c5cff22;
+  border: 1.5px solid #ff8a0022;
         color: inherit;
         font-size: 1.15rem;
         transition: border 0.2s;
@@ -329,9 +339,9 @@
         transition: background 0.18s, box-shadow 0.18s;
       }
       .btn.primary {
-        background: linear-gradient(90deg, var(--accent), #5b9bff);
+  background: linear-gradient(90deg, var(--accent), #ffb74d);
         color: #fff;
-        box-shadow: 0 4px 24px #7c5cff33;
+  box-shadow: 0 4px 24px #ff8a0033;
         font-weight: 700;
       }
       .btn:disabled {
@@ -353,8 +363,8 @@
         background: rgba(255, 255, 255, 0.03);
         padding: 22px;
         border-radius: 12px;
-        border: 1.5px solid #7c5cff22;
-        box-shadow: 0 2px 12px #7c5cff11;
+  border: 1.5px solid #ff8a0022;
+  box-shadow: 0 2px 12px #ff8a0011;
         font-size: 1.15rem;
         word-break: break-word;
         min-height: 80px;
@@ -378,6 +388,59 @@
         text-align: center;
         opacity: 0.85;
       }
+      /* Modal styles */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+      }
+      .modal-backdrop.open { display: flex; }
+      .modal {
+        width: min(560px, 92vw);
+        background: linear-gradient(180deg, #181f2f 80%, #232a3d 100%);
+        border: 1.5px solid #ff8a0022;
+        border-radius: 16px;
+        box-shadow: 0 24px 72px #000a, 0 4px 18px #ff8a0022;
+        padding: 18px 18px 12px 18px;
+        color: #e6eef8;
+      }
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .modal-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--accent);
+        letter-spacing: 0.15px;
+      }
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 1.4rem;
+        cursor: pointer;
+      }
+      .modal-body { max-height: 60vh; overflow-y: auto; }
+      .event-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 10px;
+        border-radius: 10px;
+        border: 1px solid #7c5cff22;
+        background: rgba(255,255,255,0.03);
+        margin-bottom: 10px;
+      }
+      .event-time { font-weight: 700; color: #dbeafe; min-width: 84px; }
+      .event-title { flex: 1; }
       /* Chatbox styles */
       .chatbox-container {
         position: fixed;
@@ -390,12 +453,12 @@
         width: 64px;
         height: 64px;
         border-radius: 50%;
-        background: linear-gradient(135deg, var(--accent), #5b9bff);
+  background: linear-gradient(135deg, var(--accent), #ffb74d);
         border: none;
         color: #fff;
         font-size: 2rem;
         cursor: pointer;
-        box-shadow: 0 8px 32px #7c5cff55, 0 4px 16px #000a;
+  box-shadow: 0 8px 32px #ff8a0055, 0 4px 16px #000a;
         transition: transform 0.2s, box-shadow 0.2s;
         display: flex;
         align-items: center;
@@ -404,7 +467,7 @@
       }
       .chat-icon-btn:hover {
         transform: scale(1.05);
-        box-shadow: 0 12px 40px #7c5cff77, 0 6px 20px #000a;
+  box-shadow: 0 12px 40px #ff8a0077, 0 6px 20px #000a;
       }
       .chat-icon-btn:active {
         transform: scale(0.95);
@@ -416,7 +479,7 @@
         background: linear-gradient(180deg, #181f2f 80%, #232a3d 100%);
         border-radius: 20px;
         box-shadow: 0 12px 48px #000a, 0 2px 12px #7c5cff22;
-        border: 1.5px solid #7c5cff22;
+  border: 1.5px solid #ff8a0022;
         padding: 24px 20px 16px 20px;
         display: none;
         flex-direction: column;
@@ -500,7 +563,7 @@
         flex: 1;
         padding: 12px;
         border-radius: 10px;
-        border: 1.5px solid #7c5cff22;
+  border: 1.5px solid #ff8a0022;
         background: #101624;
         color: #e6eef8;
         font-size: 1.08rem;
@@ -514,12 +577,12 @@
         padding: 12px 20px;
         border-radius: 10px;
         border: none;
-        background: linear-gradient(90deg, var(--accent), #5b9bff);
+  background: linear-gradient(90deg, var(--accent), #ffb74d);
         color: #fff;
         font-weight: 700;
         font-size: 1.08rem;
         cursor: pointer;
-        box-shadow: 0 2px 12px #7c5cff11;
+  box-shadow: 0 2px 12px #ff8a0011;
         transition: background 0.18s;
       }
       @media (max-width: 900px) {
@@ -582,11 +645,8 @@
   <body>
     <main class="container">
       <header class="header">
-        <h1>Calendar Summarizer</h1>
+        <h1>Task Manager</h1>
         <div class="accent-bar"></div>
-        <p class="tagline">
-          Upload an ICS file to generate a summary using the backend service.
-        </p>
       </header>
 
       <!-- Calendar (Full Width First Row) -->
@@ -685,8 +745,9 @@
     </div>
 
     <script>
-      // Backend endpoint for main form
-      const ENDPOINT = "/generate"; // Change if needed
+    // Backend endpoint for main form
+  const ENDPOINT = "/generate"; // Change if needed
+  const EVENTS_ENDPOINT = "/events";
 
       // Main form logic
       const form = document.getElementById("generateForm");
@@ -697,9 +758,24 @@
       const resultEl = document.getElementById("result");
       const resultText = document.getElementById("resultText");
 
+      let EVENTS = [];
+
       function setStatus(text, isError = false) {
         statusEl.textContent = text;
         statusEl.classList.toggle("error", isError);
+      }
+
+      async function fetchEvents() {
+        try {
+          const resp = await fetch(EVENTS_ENDPOINT);
+          if (!resp.ok) throw new Error(`Failed to fetch events: ${resp.status}`);
+          const data = await resp.json();
+          EVENTS = Array.isArray(data.events) ? data.events : [];
+          renderCalendar(currentMonth, currentYear); // update markers
+          updateSelectedDateDisplay();
+        } catch (e) {
+          // non-fatal; keep placeholders
+        }
       }
 
       clearBtn.addEventListener("click", () => {
@@ -749,6 +825,8 @@
           resultText.textContent = bodyText;
           resultEl.hidden = false;
           setStatus("Done.");
+          // Refresh events after uploading a calendar
+          await fetchEvents();
         } catch (err) {
           console.error(err);
           setStatus("Request failed: " + (err.message || err), true);
@@ -779,7 +857,7 @@
       });
 
       // Change this to your backend chat endpoint if available
-      const CHAT_ENDPOINT = "/chat";
+  const CHAT_ENDPOINT = "/chat";
 
       function addMessage(text, sender = "user") {
         const msgDiv = document.createElement("div");
@@ -819,6 +897,8 @@
           // Remove loading message
           chatMessages.lastChild.remove();
           addMessage(aiText, "ai");
+          // After AI potentially changed the calendar, refresh events
+          await fetchEvents();
         } catch (err) {
           chatMessages.lastChild.remove();
           addMessage("AI is unavailable.", "ai");
@@ -833,6 +913,51 @@
       const calendarSelectedDate = document.getElementById(
         "calendarSelectedDate"
       );
+
+      // Modal elements
+      const dayModal = document.createElement('div');
+      dayModal.className = 'modal-backdrop';
+      dayModal.id = 'dayModal';
+      dayModal.innerHTML = `
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dayModalTitle">
+          <div class="modal-header">
+            <div class="modal-title" id="dayModalTitle">Events</div>
+            <button class="modal-close" id="dayModalClose" title="Close">✕</button>
+          </div>
+          <div class="modal-body" id="dayModalBody"></div>
+        </div>`;
+      document.body.appendChild(dayModal);
+
+      const dayModalCloseBtn = document.getElementById('dayModalClose');
+      const dayModalBody = document.getElementById('dayModalBody');
+      const dayModalTitle = document.getElementById('dayModalTitle');
+
+      function dateToLocalDateStr(dateObj) {
+        return new Date(dateObj.getTime() - dateObj.getTimezoneOffset()*60000).toISOString().slice(0,10);
+      }
+
+      function openDayModal(dateObj) {
+        const dateStr = dateToLocalDateStr(dateObj);
+        const items = EVENTS.filter(ev => ev.date === dateStr);
+        const pretty = dateObj.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        dayModalTitle.textContent = `Events on ${pretty}`;
+        if (!items.length) {
+          dayModalBody.innerHTML = '<div class="event-item"><div class="event-title">No events</div></div>';
+        } else {
+          dayModalBody.innerHTML = items.map(ev => {
+            return `<div class="event-item">`+
+                     `<div class="event-time">${ev.start} - ${ev.end}</div>`+
+                     `<div class="event-title">${ev.title}</div>`+
+                   `</div>`;
+          }).join('');
+        }
+        dayModal.classList.add('open');
+      }
+
+      function closeDayModal() { dayModal.classList.remove('open'); }
+      dayModalCloseBtn.addEventListener('click', closeDayModal);
+      dayModal.addEventListener('click', (e) => { if (e.target === dayModal) closeDayModal(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && dayModal.classList.contains('open')) closeDayModal(); });
 
       let today = new Date();
       let currentMonth = today.getMonth();
@@ -877,6 +1002,8 @@
         // Fill days
         for (let day = 1; day <= daysInMonth; day++) {
           const dateObj = new Date(year, month, day);
+          const dateStr = new Date(dateObj.getTime() - dateObj.getTimezoneOffset()*60000)
+            .toISOString().slice(0,10); // yyyy-MM-dd local-ish
           let classes = [];
           if (
             dateObj.getDate() === today.getDate() &&
@@ -893,6 +1020,9 @@
           ) {
             classes.push("selected");
           }
+          // mark days with events
+          const hasEvents = EVENTS.some(ev => ev.date === dateStr);
+          if (hasEvents) classes.push('has-events');
           html += `<td class="${classes.join(
             " "
           )}" data-day="${day}">${day}</td>`;
@@ -913,32 +1043,39 @@
 
       // Calendar summary update function
       function updateCalendarSummary() {
-        // This is a placeholder - in a real app, you'd calculate this from actual calendar data
-        // For now, we'll show sample data based on the selected date
+        const totalEl = document.getElementById('totalEvents');
+        const busyEl = document.getElementById('busyHours');
+        const freeEl = document.getElementById('freeTime');
+        const nextEl = document.getElementById('nextEvent');
 
+        const now = new Date();
+        let filtered = EVENTS;
         if (selectedDay) {
-          // Simulate some events for the selected day
-          const totalEvents = Math.floor(Math.random() * 8) + 2;
-          const busyHours = Math.floor(Math.random() * 6) + 2;
-          const freeHours = 8 - busyHours;
+          const dateStr = new Date(selectedDay.getTime() - selectedDay.getTimezoneOffset()*60000)
+            .toISOString().slice(0,10);
+          filtered = EVENTS.filter(ev => ev.date === dateStr);
+        }
 
-          document.getElementById("totalEvents").textContent = totalEvents;
-          document.getElementById("busyHours").textContent = `${busyHours}h`;
-          document.getElementById("freeTime").textContent = `${freeHours}h`;
+        const totalEvents = filtered.length;
+        const busyMinutes = filtered.reduce((acc, ev) => acc + (ev.durationMinutes || 0), 0);
+        const busyHours = Math.round((busyMinutes/60)*10)/10;
+        const freeHours = Math.max(0, 8 - busyHours); // naive free time per day
 
-          // Generate a random next event time
-          const hours = Math.floor(Math.random() * 12) + 1;
-          const minutes = Math.random() < 0.5 ? "00" : "30";
-          const ampm = Math.random() < 0.5 ? "AM" : "PM";
-          document.getElementById(
-            "nextEvent"
-          ).textContent = `${hours}:${minutes} ${ampm}`;
+        totalEl.textContent = String(totalEvents);
+        busyEl.textContent = `${busyHours}h`;
+        freeEl.textContent = `${freeHours}h`;
+
+        // Next event overall (from now)
+        const upcoming = EVENTS
+          .map(ev => ({ ev, dt: new Date(`${ev.date}T${ev.start}:00`) }))
+          .filter(x => x.dt >= now)
+          .sort((a, b) => a.dt - b.dt)[0];
+        if (upcoming) {
+          const hrs = String(upcoming.dt.getHours()).padStart(2,'0');
+          const mins = String(upcoming.dt.getMinutes()).padStart(2,'0');
+          nextEl.textContent = `${hrs}:${mins}`;
         } else {
-          // Show default values for current day
-          document.getElementById("totalEvents").textContent = "5";
-          document.getElementById("busyHours").textContent = "4h";
-          document.getElementById("freeTime").textContent = "4h";
-          document.getElementById("nextEvent").textContent = "2:00 PM";
+          nextEl.textContent = 'None';
         }
       }
 
@@ -963,6 +1100,8 @@
           selectedDay = new Date(currentYear, currentMonth, day);
           renderCalendar(currentMonth, currentYear);
           updateSelectedDateDisplay();
+          // Show details popup
+          openDayModal(selectedDay);
         }
       });
 
@@ -990,6 +1129,8 @@
       renderCalendar(currentMonth, currentYear);
       updateSelectedDateDisplay();
       updateCalendarSummary();
+      // Load events from server and update UI
+      fetchEvents();
     </script>
   </body>
 </html>
